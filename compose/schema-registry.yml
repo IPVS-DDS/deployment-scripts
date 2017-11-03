@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  schema-registry:
+    # Use the host network and not any networks provided by Docker.
+    networks:
+      hostnet: {}
+    environment:
+      # Space separated list of Zookeeper instance URLs
+      - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=${ZK_URLS}.
+      # Hostname of the schema registry. Is set to localhost since it is running globally anyways.
+      - SCHEMA_REGISTRY_HOST_NAME=localhost
+      # Listen to requests coming from anywhere on port 8081.
+      - SCHEMA_REGISTRY_LISTENERS=http://0.0.0.0:8081
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    image: confluentinc/cp-schema-registry:3.3.0
+
+networks:
+  hostnet:
+    external:
+      name: host
